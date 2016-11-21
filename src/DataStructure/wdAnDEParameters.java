@@ -415,6 +415,10 @@ public abstract class wdAnDEParameters {
 		return N;
 	}
 	
+	public void incrementN(){
+		 N++;
+	}
+	
 	public int getNC(){
 		return nc;
 	}
