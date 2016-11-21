@@ -40,22 +40,21 @@ package AnDE;
 
 import DataStructure.wdAnDEParameters;
 import DataStructure.wdAnDEParametersFlat;
-import DataStructure.wdAnDEParametersIndexedBig;
 import logDistributionComputation.LogDistributionComputerAnDE;
 
 import Utils.SUtils;
 import Utils.plTechniques;
 
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.UpdateableClassifier;
 import weka.core.Capabilities;
 import weka.core.Capabilities.Capability;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.core.Utils;
-import weka.filters.supervised.attribute.Discretize;
 
-public class wdAnDEonline extends AbstractClassifier implements OptionHandler {
+public class wdAnDEonline extends AbstractClassifier implements OptionHandler, UpdateableClassifier  {
 
 	private static final long serialVersionUID = 4823531716976859217L;
 
@@ -80,8 +79,6 @@ public class wdAnDEonline extends AbstractClassifier implements OptionHandler {
 
 	@Override
 	public void buildClassifier(Instances instances) throws Exception {
-
-		Instances  m_DiscreteInstances = null;
 
 		// can classifier handle the data?
 		getCapabilities().testWithFail(instances);
@@ -135,10 +132,18 @@ public class wdAnDEonline extends AbstractClassifier implements OptionHandler {
 
 		if (m_MVerb)
 			System.out.println("All data structures are initialized. Starting to estimate parameters.");
+		
+		if (nInstances > 0) {
+			for (int i = 0; i < nInstances; i++) {
+				Instance instance = instances.instance(i);
+				dParameters_.updateFirstPass(instance);				
+			}
+		}
 	}
 
 	public void updateClassifier(Instance instance) {
 		dParameters_.updateFirstPass(instance);
+		dParameters_.incrementN();
 	}
 
 	@Override
